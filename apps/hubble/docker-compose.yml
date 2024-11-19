@@ -44,8 +44,8 @@ services:
       - '${GOSSIP_PORT:-2282}:${GOSSIP_PORT:-2282}' # Gossip. You can set GOSSIP_PORT in .env
       - '${RPC_PORT:-2283}:${RPC_PORT:-2283}' # RPC. You can set RPC_PORT in .env
     volumes:
-      - ./.hub:/home/node/app/apps/hubble/.hub
-      - ./.rocks:/home/node/app/apps/hubble/.rocks
+      - ./.hub:/home/nodev/hub-monorepo/apps/hubble/.hub
+      - ./.rocks:/home/nodev/hub-monorepo/apps/hubble/.rocks
     networks:
       - my-network
     logging:

@@ -41,8 +41,8 @@ services:
         "$TEST_HUB1_ID",
       ]
     volumes:
-      - ./apps/hubble/.hub:/home/node/app/apps/hubble/.hub
-      - ./apps/hubble/.rocks:/home/node/app/apps/hubble/.rocks
+      - ./apps/hubble/.hub:/home/nodev/hub-monorepo/apps/hubble/.hub
+      - ./apps/hubble/.rocks:/home/nodev/hub-monorepo/apps/hubble/.rocks
   hubble2:
     build:
       context: .
@@ -75,5 +75,5 @@ services:
         "$TEST_HUB2_ID",
       ]
     volumes:
-      - ./apps/hubble/.hub:/home/node/app/apps/hubble/.hub
-      - ./apps/hubble/.rocks:/home/node/app/apps/hubble/.rocks
+      - ./apps/hubble/.hub:/home/nodev/hub-monorepo/apps/hubble/.hub
+      - ./apps/hubble/.rocks:/home/nodev/hub-monorepo/apps/hubble/.rocks

@@ -80,7 +80,7 @@ WORKDIR /home/node/app
 # Copy results from previous stage.
 # The base image is same as the build stage, so it is safe to copy node_modules over to this stage.
 COPY --chown=node:node --from=prune /home/node/app/out/json/ .
-COPY --chown=node:node --from=build /home/node/app/apps/hubble/build ./apps/hubble/build
+COPY --chown=node:node --from=build /home/nodev/hub-monorepo/apps/hubble/build ./apps/hubble/build
 COPY --chown=node:node --from=build /home/node/app/node_modules ./node_modules
 COPY --chown=node:node --from=build /home/node/app/packages/core/dist ./packages/core/dist/
 COPY --chown=node:node --from=build /home/node/app/packages/hub-nodejs/dist ./packages/hub-nodejs/dist/
@@ -94,7 +94,7 @@ COPY --from=app / /
 USER node
 EXPOSE 2282
 EXPOSE 2283
-WORKDIR /home/node/app/apps/hubble
+WORKDIR /home/nodev/hub-monorepo/apps/hubble
 
 # Run using pm2 as supervisor for faster recoveries on failure
 COPY --chown=node:node ./apps/hubble/pm2.config.cjs ./pm2.config.cjs
