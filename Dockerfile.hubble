@@ -8,14 +8,14 @@
 FROM node:22.4.1-slim AS prune
 
 USER node
-RUN mkdir /home/node/app
-WORKDIR /home/node/app
+RUN mkdir /home/nodev/app
+WORKDIR /home/nodev/app
 
 # Run turbo prune to create a pruned version of monorepo
 COPY --chown=node:node ./package.json ./package.json
 RUN yarn global add turbo@$(node -e "console.log(require('./package.json').devDependencies.turbo)")
 COPY --chown=node:node . .
-RUN /home/node/.yarn/bin/turbo prune --scope=@farcaster/hubble --docker
+RUN /home/nodev/.yarn/bin/turbo prune --scope=@farcaster/hubble --docker
 
 ###############################################################################
 ############## Stage 2: Build the code using a full node image ################
@@ -27,8 +27,8 @@ FROM node:22.4.1-slim AS build
 RUN apt-get update && apt-get install -y python3 make g++ linux-headers-generic curl protobuf-compiler libclang-dev cmake
 
 USER node
-RUN mkdir /home/node/app
-WORKDIR /home/node/app
+RUN mkdir /home/nodev/app
+WORKDIR /home/nodev/app
 
 # Install Rust
 # Make sure this matches what we do locally and in CI
@@ -39,8 +39,8 @@ ENV PATH="/home/node/.cargo/bin:${PATH}"
 ENV RUSTFLAGS="-C target-feature=-crt-static"
 
 # Copy dependency information and install all dependencies
-COPY --chown=node:node --from=prune /home/node/app/out/json/ .
-COPY --chown=node:node --from=prune /home/node/app/out/yarn.lock ./yarn.lock
+COPY --chown=node:node --from=prune /home/nodev/app/out/json/ .
+COPY --chown=node:node --from=prune /home/nodev/app/out/yarn.lock ./yarn.lock
 
 # Restore commented line if we patch-package again:
 # COPY --chown=node:node patches patches
@@ -49,7 +49,7 @@ RUN yarn install --frozen-lockfile --network-timeout 1800000
 RUN yarn postinstall
 
 # Copy source code (and all other relevant files)
-COPY --chown=node:node --from=prune /home/node/app/out/full/ .
+COPY --chown=node:node --from=prune /home/nodev/app/out/full/ .
 # turbo prune doesn't include global tsconfig.json (https://github.com/vercel/turbo/issues/2177)
 COPY --chown=node:node tsconfig.json tsconfig.json
 COPY --chown=node:node protobufs protobufs
@@ -74,16 +74,16 @@ USER node
 # Many npm packages use this to trigger production optimized behaviors
 ENV NODE_ENV production
 
-RUN mkdir /home/node/app
-WORKDIR /home/node/app
+RUN mkdir /home/nodev/app
+WORKDIR /home/nodev/app
 
 # Copy results from previous stage.
 # The base image is same as the build stage, so it is safe to copy node_modules over to this stage.
-COPY --chown=node:node --from=prune /home/node/app/out/json/ .
+COPY --chown=node:node --from=prune /home/nodev/app/out/json/ .
 COPY --chown=node:node --from=build /home/nodev/hub-monorepo/apps/hubble/build ./apps/hubble/build
-COPY --chown=node:node --from=build /home/node/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /home/node/app/packages/core/dist ./packages/core/dist/
-COPY --chown=node:node --from=build /home/node/app/packages/hub-nodejs/dist ./packages/hub-nodejs/dist/
+COPY --chown=node:node --from=build /home/nodev/app/node_modules ./node_modules
+COPY --chown=node:node --from=build /home/nodev/app/packages/core/dist ./packages/core/dist/
+COPY --chown=node:node --from=build /home/nodev/app/packages/hub-nodejs/dist ./packages/hub-nodejs/dist/
 
 
 # BuildKit doesn't support --squash flag, so emulate by copying into fewer layers
